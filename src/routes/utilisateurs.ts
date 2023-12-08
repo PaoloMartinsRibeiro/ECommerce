@@ -105,27 +105,37 @@ router.put('/:id', authenticateUser, async (req, res) => {
 })
 
 router.delete('/:id', authenticateUser, async (req, res) => {
-    const userId = Number(req.params.id)
+    const userId = Number(req.params.id);
 
     try {
         await prisma.$transaction(async (prisma) => {
+            await prisma.commandeProduit.deleteMany({
+                where: {
+                    commande: {
+                        utilisateurId: userId
+                    }
+                }
+            });
+
             await prisma.commande.deleteMany({
                 where: { utilisateurId: userId }
-            })
+            });
 
             const utilisateur = await prisma.utilisateur.delete({
                 where: { id: userId }
-            })
-            res.json(utilisateur)
-        })
+            });
+
+            res.json(utilisateur);
+        });
     } catch (e) {
         if (e instanceof Error) {
-            res.status(500).json({ error: e.message })
+            res.status(500).json({ error: e.message });
         } else {
-            res.status(500).json({ error: "Une erreur inconnue est survenue" })
+            res.status(500).json({ error: "Une erreur inconnue est survenue" });
         }
     }
-})
+});
+
 
 
 export default router
