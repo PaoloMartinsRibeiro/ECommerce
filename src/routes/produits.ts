@@ -78,13 +78,20 @@ router.put("/:id", authenticateUser, async (req, res) => {
 })
 
 router.delete("/:id", authenticateUser, async (req, res) => {
+    const produitId = Number(req.params.id)
+
     try {
-        const produit = await prisma.produit.delete({
-            where: {
-                id: Number(req.params.id)
-            }
+        await prisma.$transaction(async (prisma) => {
+            await prisma.commandeProduit.deleteMany({
+                where: { produitId: produitId }
+            })
+
+            const produit = await prisma.produit.delete({
+                where: { id: produitId }
+            })
+
+            res.json(produit)
         })
-        res.json(produit)
     } catch (e) {
         if (e instanceof Error) {
             res.status(500).json({ error: e.message })
