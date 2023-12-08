@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import Produits  from './routes/produits'
 import Utilisateurs  from './routes/utilisateurs'
 import Commandes from './routes/commandes'
@@ -23,7 +23,7 @@ app.use(passport.initialize())
 app.get(
    "/protected",
    passport.authenticate("jwt", { session: false }),
-   (req, res) => {
+   (req: Request, res: Response) => {
      console.log(req.user)
      res.send("Vous êtes bien connecté !")
    }

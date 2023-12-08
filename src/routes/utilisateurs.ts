@@ -105,13 +105,19 @@ router.put('/:id', authenticateUser, async (req, res) => {
 })
 
 router.delete('/:id', authenticateUser, async (req, res) => {
+    const userId = Number(req.params.id)
+
     try {
-        const utilisateur = await prisma.utilisateur.delete({
-            where: {
-                id: Number(req.params.id)
-            }
+        await prisma.$transaction(async (prisma) => {
+            await prisma.commande.deleteMany({
+                where: { utilisateurId: userId }
+            })
+
+            const utilisateur = await prisma.utilisateur.delete({
+                where: { id: userId }
+            })
+            res.json(utilisateur)
         })
-        res.json(utilisateur)
     } catch (e) {
         if (e instanceof Error) {
             res.status(500).json({ error: e.message })
@@ -120,5 +126,6 @@ router.delete('/:id', authenticateUser, async (req, res) => {
         }
     }
 })
+
 
 export default router
