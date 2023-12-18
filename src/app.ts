@@ -13,21 +13,11 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(cors())
 app.use(helmet())
+app.use(passport.initialize())
 
 app.use('/utilisateurs', Utilisateurs)
 app.use('/produits', Produits)
 app.use('/commandes', Commandes)
-
-app.use(passport.initialize())
-
-app.get(
-   "/protected",
-   passport.authenticate("jwt", { session: false }),
-   (req: Request, res: Response) => {
-     console.log(req.user)
-     res.send("Vous êtes bien connecté !")
-   }
-)
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
