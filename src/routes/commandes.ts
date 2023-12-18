@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 //     ]
 // }
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateUser, async (req, res) => {
     try {
         const commandes = await prisma.commande.findMany()
         res.json(commandes)
@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
         }
 }})
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateUser, async (req, res) => {
     try {
         const commande = await prisma.commande.findUnique({
             where: {
@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.get('/:id/produits', async (req, res) => {
+router.get('/:id/produits', authenticateUser, async (req, res) => {
     try {
         const produits = await prisma.commandeProduit.findMany({
             where: {

@@ -50,7 +50,7 @@ router.post('/signIn', async (req: Request, res: Response) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateUser, async (req, res) => {
     try {
         const utilisateurs = await prisma.utilisateur.findMany()
         res.json(utilisateurs)
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateUser, async (req, res) => {
     try {
         const utilisateur = await prisma.utilisateur.findUnique({
             where: {
@@ -105,7 +105,7 @@ router.put('/:id', authenticateUser, async (req, res) => {
 })
 
 router.delete('/:id', authenticateUser, async (req, res) => {
-    const userId = Number(req.params.id);
+    const userId = Number(req.params.id)
 
     try {
         await prisma.$transaction(async (prisma) => {
@@ -115,26 +115,26 @@ router.delete('/:id', authenticateUser, async (req, res) => {
                         utilisateurId: userId
                     }
                 }
-            });
+            })
 
             await prisma.commande.deleteMany({
                 where: { utilisateurId: userId }
-            });
+            })
 
             const utilisateur = await prisma.utilisateur.delete({
                 where: { id: userId }
-            });
+            })
 
-            res.json(utilisateur);
-        });
+            res.json(utilisateur)
+        })
     } catch (e) {
         if (e instanceof Error) {
-            res.status(500).json({ error: e.message });
+            res.status(500).json({ error: e.message })
         } else {
-            res.status(500).json({ error: "Une erreur inconnue est survenue" });
+            res.status(500).json({ error: "Une erreur inconnue est survenue" })
         }
     }
-});
+})
 
 
 
